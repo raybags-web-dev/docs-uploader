@@ -10,10 +10,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
-/* '/single/file' */
-require('./src/engines').singlefileEngine(app, './images');
-/* '/multiple/files' */
-require('./src/engines').multipleEngineUploader(app, './images');
+const { singlefileEngine, multipleEngineUploader } = require('./src/engines');
+singlefileEngine(app, './images');
+multipleEngineUploader(app, './images');
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {

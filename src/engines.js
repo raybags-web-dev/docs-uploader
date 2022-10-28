@@ -29,7 +29,7 @@ async function multipleEngineUploader(app, image_path, ) {
         // single file storage functionality
         const fileStorageEngine = multer.diskStorage({
             destination: (req, file, cb) => cb(null, image_path),
-            filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
+            filename: (req, file, cb) => cb(null, file.originalname)
         });
         const upload = multer({ storage: fileStorageEngine });
 
