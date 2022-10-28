@@ -11,8 +11,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
 const { singlefileEngine, multipleEngineUploader } = require('./src/engines');
-singlefileEngine(app, './images');
-multipleEngineUploader(app, './images');
+singlefileEngine(app, './local_storage');
+multipleEngineUploader(app, './local_storage');
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
