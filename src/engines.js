@@ -1,4 +1,5 @@
 const multer = require('multer');
+const { Doc } = require('./models/document.JS');
 
 // single image upload engine
 async function singlefileEngine(app, image_path, ) {
@@ -33,9 +34,25 @@ async function multipleEngineUploader(app, image_path, ) {
         });
         const upload = multer({ storage: fileStorageEngine });
 
-        app.post('/multiple/files', upload.array('images', 3), (req, res) => {
+        app.post('/multiple/files', upload.array('images', 100), async(req, res) => {
             const image_files = req.files;
             if (!image_files.length) return res.status(500).json({ status: 'failed', message: 'Something went wrong try again later!' });
+
+            const { originalname, mimetype, filename, path, size } = image_files
+
+            // let doc = await Doc.findOne({
+            //     originalname: req.body.originalname
+            // });
+
+            // if (doc) return res.status(400).json({ message: "document already exists!" });
+
+            // await Doc.create({
+            //     originalname,
+            //     mimetype,
+            //     filename,
+            //     path,
+            //     size
+            // })
 
             res.status(200).json({ status: 'success', message: 'image upload was successful' });
         })

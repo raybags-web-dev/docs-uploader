@@ -1,3 +1,6 @@
+'use strict'
+// import { createImageModel } from './js/model';
+
 const submitButton = document.getElementById('submit_button')
 const imageContainer = document.getElementById('image_container');
 const imageInput = document.getElementById('file_inputt');
@@ -44,12 +47,9 @@ imageInput.addEventListener('change', async(event) => {
                 IMG.classList = 'rounded  float-start'
                 IMG.title = `${name}`
                 IMG.alt = '...'
-                IMG.width = 200
-                IMG.height = 200
 
                 submitButton.addEventListener('click', (e) => {
                     e.preventDefault();
-                    console.log(IMG)
                     imageContainer.appendChild(IMG);
                 })
             })
@@ -110,13 +110,13 @@ async function doUpload(e) {
 }
 
 async function uploadFile(f) {
-    console.log(`Starting with ${f.name}`);
+    console.log(`Saving: ${f.name}`);
     let form = new FormData();
 
     form.append('images', f);
     let resp = await fetch('/multiple/files', { method: 'POST', body: form });
     let data = await resp.json();
-    console.log(`Done with ${f.name}`);
+    console.log(`Done: ${f.name}`);
     return data;
 }
 
@@ -145,14 +145,13 @@ async function load_available_docs() {
     }
 }
 
-function initUpdator() {
+// initail document load
+(async() => {
     try {
         let total_doc_count = localStorage.length;
         myLable.innerHTML = `Total document count: [ ${total_doc_count} ]`
-
     } catch (e) {
         console.log(e.message)
         myLable.innerHTML = `Error: ${e.message}`
     }
-}
-initUpdator()
+})()
