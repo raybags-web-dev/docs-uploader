@@ -1,5 +1,4 @@
 'use strict'
-// import { createImageModel } from './js/model';
 
 const submitButton = document.getElementById('submit_button')
 const imageContainer = document.getElementById('image_container');
@@ -11,64 +10,32 @@ imageInput.addEventListener('change', async(event) => {
     try {
         event.preventDefault();
         if (!window.File && !window.FileReader && !window.FileList && !window.Blob) return alert('Sorry - Browser does not support File API');
+
         const files = await event.target.files;
         myLable.innerHTML = `${files.length} : selected`
-        myLable.style.cssText = 'color: #66FF00;'
-
+        myLable.style.cssText = 'color: #66FF00 !important;'
 
         for (let i = 0; i < files.length; i++) {
             const { type, name } = files[i];
-
-            const keys = Object.keys(localStorage)
-            for (let key of keys) {
-                if (key === name) {
-                    myLable.innerHTML = 'One or more duplicate files detected!'
-                    myLable.style.cssText = 'color: red;'
-                    event.stopPropagation
-                    event.target.value = '';
-                    setTimeout(() => {
-                        myLable.style.cssText = 'color: inherit;'
-                        myLable.innerHTML = 'Please try again'
-                    }, 2000)
-                    return;
-                }
-            }
-
             if (!type.match("image")) continue;
-
-            const picReader = new FileReader();
-            picReader.addEventListener('load', (e) => {
-                const { result } = e.target;
-
-                (result && name != undefined) && localStorage.setItem(`${name}`, `${result}`);
-
-                const IMG = new Image();
-                IMG.src = `${result}`
-                IMG.classList = 'rounded  float-start'
-                IMG.title = `${name}`
-                IMG.alt = '...'
-
-                submitButton.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    imageContainer.appendChild(IMG);
-                })
-            })
-            picReader.readAsDataURL(files[i]);
         }
+        submitButton.addEventListener('click', (e) => e.preventDefault())
     } catch (e) {
         console.warn(e.message)
         myLable.innerHTML = `Error: ${e.message}`
-
     }
 })
 
+
 // send files to server
 document.addEventListener('DOMContentLoaded', init, false);
+
 async function init() {
     loader_spin.classList.add('hide_element');
     submitButton.setAttribute('disabled', 'true');
-    submitButton.addEventListener('click', doUpload, false);
-}
+};
+
+submitButton.addEventListener('click', doUpload, false);
 
 async function doUpload(e) {
     e.preventDefault();
@@ -81,7 +48,6 @@ async function doUpload(e) {
         myLable.innerHTML = 'Please select one or more files.';
         myLable.style.cssText = 'color: red'
         setTimeout(() => myLable.style.cssText = 'color: inherit', 2000)
-
         return;
     }
 
@@ -104,9 +70,11 @@ async function doUpload(e) {
     loader_spin.classList.remove('hide_element');
 
     setTimeout(() => {
-        submitButton.childNodes[2].nodeValue = 'Upload';
-        loader_spin.classList.add('hide_element')
-    }, 2000)
+            submitButton.childNodes[2].nodeValue = 'Upload';
+            loader_spin.classList.add('hide_element')
+        }, 2000)
+        // fetch all docs in database
+    await load_available_docs();
 }
 
 async function uploadFile(f) {
@@ -120,38 +88,42 @@ async function uploadFile(f) {
     return data;
 }
 
-imageInput.addEventListener('focus', (e) => {
-        if (e.type == 'focus') return submitButton.removeAttribute('disabled');
-    })
-    // document.addEventListener('DOMContentLoaded', load_available_docs)
+
+
 window.addEventListener('load', load_available_docs, false);
 async function load_available_docs() {
     try {
-        const keys = Object.keys(localStorage)
-        for (let key of keys) {
-            let doc_value = localStorage.getItem(key);
+        // empty container
+        imageContainer.innerHTML = "";
+
+        let response = await fetch('/get-all/docs');
+        let data = await response.json();
+
+        let { length } = await data;
+        if (length == 0) return;
+
+
+        for (let obj of data) {
+            if (!obj || obj.filename == undefined) return;
+            const { filename } = await obj
 
             const IMG = new Image();
-            IMG.src = `${doc_value}`
+            IMG.src = `./local_storage/${filename}`
             IMG.classList = 'rounded  float-start'
-            IMG.title = `${key}`
+            IMG.title = `${filename}`
             IMG.alt = '...'
 
             imageContainer.appendChild(IMG);
         }
+        myLable.innerHTML = `Total document count: [ ${length} ]`
 
-    } catch (e) {
-        console.log(e.message)
-    }
-}
-
-// initail document load
-(async() => {
-    try {
-        let total_doc_count = localStorage.length;
-        myLable.innerHTML = `Total document count: [ ${total_doc_count} ]`
     } catch (e) {
         console.log(e.message)
         myLable.innerHTML = `Error: ${e.message}`
     }
-})()
+}
+
+// activate submit button
+imageInput.addEventListener('focus', (e) => {
+    if (e.type == 'focus') return submitButton.removeAttribute('disabled');
+});

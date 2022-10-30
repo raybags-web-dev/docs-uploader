@@ -17,11 +17,12 @@ const connectDB = require("./src/DB/db");
 require("dotenv").config();
 const { DB_CONNECTION_STRING, } = process.env;
 
-const { multipleEngineUploader, deleteDocHandler, delete_all } = require('./src/engines');
+const { multipleEngineUploader, deleteDocHandler, delete_all, get_all_handler } = require('./src/engines');
 
-multipleEngineUploader(app, './local_storage');
+multipleEngineUploader(app, './public/local_storage');
 deleteDocHandler(app);
 delete_all(app);
+get_all_handler(app);
 
 (asyncMiddleware(async() => {
     console.log("initializing connection  to server...");

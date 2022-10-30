@@ -4,7 +4,10 @@ const { delete_doc, delete_all_docs } = require('./headyLifters/delete');
 const asyncMiddleware = require('./middleware/async');
 require('dotenv').config();
 const { MY_PERMISSION_TOKEN } = process.env
+const apicache = require('apicache');
 
+// cache
+let cache = apicache.middleware;
 
 // single image upload engine
 async function multipleEngineUploader(app, image_path) {
@@ -47,7 +50,6 @@ async function multipleEngineUploader(app, image_path) {
         console.log(e.message)
     }
 }
-
 // delete one document
 async function deleteDocHandler(app) {
     try {
@@ -65,7 +67,7 @@ async function deleteDocHandler(app) {
             if (!doc_file) return res.status(400).json({ status: 'failed', message: "could not find file" });
 
             // delete from file system
-            await delete_doc('local_storage/', doc_file.filename);
+            await delete_doc('public/local_storage/', doc_file.filename);
 
             res.status(200).json({ status: 'success', file: file_name, message: 'file deleted successfully' });
         }))
@@ -93,8 +95,22 @@ async function delete_all(app) {
         console.log(e.message)
     }
 }
+async function get_all_handler(app) {
+    try {
+        app.get("/get-all/docs", asyncMiddleware(async(req, res) => {
+            let alldocuments = await Doc.find({});
+            if (alldocuments.length == 0 || !alldocuments) return res.status(404).json('nothing for now')
+            res.status(200).json(alldocuments);
+        }))
+
+    } catch (e) {
+        console.log(e.message)
+    }
+}
+
 module.exports = {
     multipleEngineUploader,
     deleteDocHandler,
-    delete_all
+    delete_all,
+    get_all_handler
 }

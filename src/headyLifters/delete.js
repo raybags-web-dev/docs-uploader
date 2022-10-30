@@ -17,7 +17,7 @@ async function delete_doc(directoryPath, fileName) {
 //delete file
 
 async function delete_all_docs() {
-    let doc_folder_path = path.resolve('local_storage');
+    let doc_folder_path = path.resolve('public/local_storage');
     try {
         let files = fs.readdirSync(doc_folder_path);
         if (files.length == 0) return console.log('nothing to delete!!')
