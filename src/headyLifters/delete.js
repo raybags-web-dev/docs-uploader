@@ -1,22 +1,44 @@
 const fs = require('fs');
+const path = require('path')
 
-const DIR = '../../local_storage';
+//delete file
+async function delete_doc(directoryPath, fileName) {
+    try {
+        fs.unlink(directoryPath + fileName, (err) => {
+            if (err) return console.log("Operation failed: " + err.message)
+            console.log("File is deleted.")
+        });
 
-async function deleteDoc(app, image_name) {
-    app.delete(`/api/v1/delete/:${image_name}`, async(req, res) => {
-        if (!req.params.imagename) {
-            console.log("No file received");
-            return res.status(500).json('error in delete');
-
-        } else {
-            console.log(req.params.imagename);
-            fs.unlinkSync(DIR + '/' + req.params.imagename);
-            return res.status(200).send('Successfully! Image has been Deleted');
-
-        }
-    });
+    } catch (e) {
+        console.log(e.message)
+    }
 }
 
+//delete file
+
+async function delete_all_docs() {
+    let doc_folder_path = path.resolve('local_storage');
+    try {
+        let files = fs.readdirSync(doc_folder_path);
+        if (files.length == 0) return console.log('nothing to delete!!')
+
+        if (files.length > 0)
+            for (let i = 0; i < files.length; i++) {
+                let filePath = doc_folder_path + '/' + files[i];
+                if (fs.statSync(filePath).isFile())
+                    fs.unlinkSync(filePath);
+                else
+                    rmDir(filePath);
+            }
+
+    } catch (e) {
+        return;
+    }
+};
+
+
+
 module.exports = {
-    deleteDoc
+    delete_doc,
+    delete_all_docs
 }

@@ -11,17 +11,17 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
+
 const connectDB = require("./src/DB/db");
 //env variables
 require("dotenv").config();
 const { DB_CONNECTION_STRING, } = process.env;
 
-const { singlefileEngine, multipleEngineUploader } = require('./src/engines');
+const { multipleEngineUploader, deleteDocHandler, delete_all } = require('./src/engines');
 
-singlefileEngine(app, './local_storage');
 multipleEngineUploader(app, './local_storage');
-
-
+deleteDocHandler(app);
+delete_all(app);
 
 (asyncMiddleware(async() => {
     console.log("initializing connection  to server...");
