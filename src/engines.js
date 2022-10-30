@@ -36,23 +36,32 @@ async function multipleEngineUploader(app, image_path, ) {
 
         app.post('/multiple/files', upload.array('images', 100), async(req, res) => {
             const image_files = req.files;
-            if (!image_files.length) return res.status(500).json({ status: 'failed', message: 'Something went wrong try again later!' });
+            if (!image_files.length) return res.status(500).json({ status: 'failed', message: 'Empty payload detected!' });
+            // console.log(image_files)
 
-            const { originalname, mimetype, filename, path, size } = image_files
+            for (let obj of image_files) {
+                const { originalname, mimetype, filename, path, size, encoding } = obj
 
-            // let doc = await Doc.findOne({
-            //     originalname: req.body.originalname
-            // });
+                let doc = await Doc.findOne({
+                    originalname
+                });
 
-            // if (doc) return res.status(400).json({ message: "document already exists!" });
+                if (doc) return res.status(400).json({
+                    status: "Failed",
+                    reason: "duplicate files detected",
+                    objec: doc,
+                    message: "this document already exists in database"
+                });
 
-            // await Doc.create({
-            //     originalname,
-            //     mimetype,
-            //     filename,
-            //     path,
-            //     size
-            // })
+                await Doc.create({
+                    originalname,
+                    mimetype,
+                    filename,
+                    path,
+                    size,
+                    encoding
+                })
+            }
 
             res.status(200).json({ status: 'success', message: 'image upload was successful' });
         })

@@ -5,7 +5,8 @@ const Document_Model = {
         type: String,
         trim: true,
         maxlength: 500,
-        minlength: 1
+        minlength: 1,
+        required: true
     },
     mimetype: {
         type: String,
@@ -29,13 +30,20 @@ const Document_Model = {
         trim: true,
         maxlength: 500,
         minlength: 1,
+    },
+    encoding: {
+        type: String,
+        trim: true,
+        maxlength: 100,
+        minlength: 1,
+        required: true
     }
 }
 
 
 // scrapped data schema 
-const Skynews1Schema = new mongoose.Schema(Document_Model, { timestamps: true });
+const DocSchema = new mongoose.Schema(Document_Model, { timestamps: true });
 
 module.exports = {
-    Doc: mongoose.model('document', Skynews1Schema)
+    Doc: mongoose.model('files', DocSchema)
 }
