@@ -38,7 +38,9 @@ document.addEventListener('click', async(event) => {
                 const { filename } = await obj
                 if (element_title === filename) {
                     await fetch(`/delete/${element_title}`, { method: 'DELETE' });
-                    await clicked_element.remove();
+
+                    // clicked_element.classList.add('smooth_ele');
+                    setTimeout(async() => await clicked_element.remove(), 600)
                 }
             }
         }
