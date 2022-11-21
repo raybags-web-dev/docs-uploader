@@ -19,7 +19,7 @@ const { DB_CONNECTION_STRING, } = process.env;
 
 const { multipleEngineUploader, deleteDocHandler, delete_all, get_all_handler } = require('./src/engines');
 
-multipleEngineUploader(app, './public/local_storage');
+multipleEngineUploader(app);
 deleteDocHandler(app);
 delete_all(app);
 get_all_handler(app);

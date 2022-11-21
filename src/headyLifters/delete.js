@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path')
 
-//delete file
+//delete doc
 async function delete_doc(directoryPath, fileName) {
     try {
         fs.unlink(directoryPath + fileName, (err) => {
@@ -14,7 +14,7 @@ async function delete_doc(directoryPath, fileName) {
     }
 }
 
-//delete file
+//delete all docs
 
 async function delete_all_docs() {
     let doc_folder_path = path.resolve('public/local_storage');
@@ -35,8 +35,6 @@ async function delete_all_docs() {
         return;
     }
 };
-
-
 
 module.exports = {
     delete_doc,
